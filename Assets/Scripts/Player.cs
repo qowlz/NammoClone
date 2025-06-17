@@ -11,6 +11,12 @@ public class Player : MonoBehaviour
     public float horizontalSpeed = 10;
 
     public float jumpForce = 20;
+
+    public float playerSightRadius = 5.0f;
+
+    public float animationSpeed = 1.0f;
+
+    public float animationRadius = 1.0f;
     
     [SerializeField] private Rigidbody2D rb;
 
@@ -30,6 +36,9 @@ public class Player : MonoBehaviour
             sr.flipX = direction == Direction.Left;
         }
     }
+    
+    private static readonly int PlayerPosID = Shader.PropertyToID("_PlayerPos");
+    private static readonly int PlayerSightRadiusID = Shader.PropertyToID("_PlayerSightRadius");
 
     // Start is called before the first frame update
     void Start()
@@ -50,5 +59,11 @@ public class Player : MonoBehaviour
         else if (yVelocity < 0) animator.Play("fall");
         else if (Mathf.Abs(xVelocity) > 0) animator.Play("run");
         else animator.Play("idle");
+        
+        float radius = playerSightRadius + Mathf.Sin(Time.time * animationSpeed) * animationRadius;
+        
+        // Update shader global variable
+        Shader.SetGlobalVector(PlayerPosID, transform.position);
+        Shader.SetGlobalFloat(PlayerSightRadiusID, radius);;
     }
 }
